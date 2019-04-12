@@ -56,6 +56,7 @@
 
             <board
                 v-if="submitted"
+                v-show="!loading"
                 :rows="options.rows"
                 :columns="options.columns"
                 :mines="options.mines"
