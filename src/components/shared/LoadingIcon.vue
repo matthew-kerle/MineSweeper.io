@@ -4,6 +4,7 @@
         title="4"
         :style="{
             height: loaderHeight,
+            margin: loaderMargin,
         }"
     >
         <svg
@@ -24,7 +25,7 @@
                 y="0"
                 :width="rectangleWidth"
                 :height="rectangleHeight"
-                fill="#ff6347"
+                :fill="getRectangleFill(0)"
             >
                 <animateTransform
                     attributeType="xml"
@@ -41,7 +42,7 @@
                 y="0"
                 :width="rectangleWidth"
                 :height="rectangleHeight"
-                fill="#ff0000"
+                :fill="getRectangleFill(1)"
             >
                 <animateTransform
                     attributeType="xml"
@@ -58,7 +59,7 @@
                 y="0"
                 :width="rectangleWidth"
                 :height="rectangleHeight"
-                fill="#ff6347"
+                :fill="getRectangleFill(2)"
             >
                 <animateTransform
                     attributeType="xml"
@@ -75,14 +76,29 @@
 </template>
 
 <script>
+import get from 'lodash';
+
 export default {
     name: 'LoadingIcon',
 
     props: {
         size: {
             type: String,
+            required: false,
             default: 'small',
             validator: val => ['small', 'large'].includes(val),
+        },
+        theme: {
+            type: String,
+            required: false,
+            default: 'mine',
+            validator: val => ['mine', 'grey', 'white'].includes(val),
+        },
+        layout: {
+            type: String,
+            required: false,
+            default: 'regular',
+            validator: val => ['regular', 'center'].includes(val),
         },
     },
 
@@ -100,12 +116,31 @@ export default {
                     rectangleWidth: '5',
                 },
             },
+            colors: {
+                mine: ['#ff6347', '#ff0000', '#ff6347'],
+                grey: ['#333'],
+                white: ['#fff'],
+            },
         };
     },
 
     computed: {
+        layoutCentered() {
+            return this.layout === 'center';
+        },
+
         loaderHeight() {
             return this.sizes[this.size].loaderHeight;
+        },
+
+        loaderMargin() {
+            let margin = '0';
+
+            if (this.layoutCentered) {
+                margin = '0 auto';
+            }
+
+            return margin;
         },
 
         rectangleWidth() {
@@ -114,6 +149,12 @@ export default {
 
         rectangleHeight() {
             return this.sizes[this.size].rectangleHeight;
+        },
+    },
+
+    methods: {
+        getRectangleFill(index) {
+            return get(this.colors[this.theme], index, this.colors[this.theme][0]);
         },
     },
 };

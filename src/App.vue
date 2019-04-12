@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <loading-overlay v-if="loading" />
+        <!-- <loading-overlay v-if="loading" /> -->
 
         <div class="PageContent">
             <page-header />
@@ -45,13 +45,12 @@
                     />
                     &nbsp;(Min: 1 | Max: {{ totalBoardSquares - 1 }})
                 </div>
-                <button
-                    type="submit"
-                    :disabled="loading"
+                <m-button
+                    :loading="loading"
                     @click="handleStartGame"
                 >
                     Start
-                </button>
+                </m-button>
             </div>
 
             <board
@@ -70,7 +69,8 @@
 <script>
 import PageHeader from './components/shared/PageHeader';
 import PageFooter from './components/shared/PageFooter';
-import LoadingOverlay from './components/shared/LoadingOverlay';
+import MButton from './components/shared/MButton';
+// import LoadingOverlay from './components/shared/LoadingOverlay';
 
 import Board from './components/Board';
 
@@ -113,7 +113,8 @@ export default {
     components: {
         PageHeader,
         PageFooter,
-        LoadingOverlay,
+        // LoadingOverlay,
+        MButton,
         Board,
     },
 
@@ -187,29 +188,17 @@ input {
     }
 }
 
-button {
-    background-color: #007fff;
-    color: #fff;
-    outline: none;
-    border: 0;
-    padding: 10px;
-    font-size: 20px;
-    width: 150px;
-    height: 50px;
-
-    &:hover:not([disabled]) {
-        cursor: pointer;
-        background-color: #0067cd;
-    }
-}
-
 .GameOptionsContainer {
     width: 50%;
     margin: 0 auto;
     border: 1px solid #ccc;
     border-radius: 15px;
     background-color: #eee;
-    padding: 15px;
+    padding: 20px;
+
+    h2 {
+        margin-top: 0;
+    }
 }
 
 .SettingContainer {
