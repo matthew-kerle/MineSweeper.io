@@ -13,7 +13,9 @@
     >
         <template v-if="hasMine && wasRevealed">
             &nbsp;<img
-                src="../assets/bomb.svg" class="Mine" />
+                src="../assets/bomb.svg"
+                class="Mine"
+            />
         </template>
         <template v-else-if="!hasMine && wasRevealed">
             {{ adjacentMines }}
