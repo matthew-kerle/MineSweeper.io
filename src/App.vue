@@ -53,6 +53,24 @@
                 </m-button>
             </div>
 
+            <div v-if="submitted && !loading && gameOver">
+                <div :class="[gameOverClass, 'Result']">
+                    <template v-if="gameWon">
+                        🎉&nbsp;Congratulations, you beat MineSweepr!&nbsp;🎉
+                    </template>
+                    <template v-else>
+                        Bomber...sorry, you lost! 💣
+                    </template>
+                </div>
+                <m-button
+                    class="PlayAgainButton"
+                    :loading="loadingPlayAgain"
+                    @click="handlePlayAgain"
+                >
+                    Play Again
+                </m-button>
+            </div>
+
             <board
                 v-if="submitted"
                 v-show="!loading"
@@ -67,45 +85,33 @@
 </template>
 
 <script>
+import { EventBus } from './EventBus';
 import PageHeader from './components/shared/PageHeader';
 import PageFooter from './components/shared/PageFooter';
 import MButton from './components/shared/MButton';
-// import LoadingOverlay from './components/shared/LoadingOverlay';
 
 import Board from './components/Board';
-
-/**
- * TODO List:
- *
- *  - During board creation place mines randomly
- *
- * - After mines are placed, add number of surrounding mines
- * next to each square by evaluating + and - rows and then + and - each column
- *
- * - Highlight all clicked squares
- *
- * - Add Click Handler for Squares:
- *
- * WHEN SQUARE CLICKED:
- * - If mine trigger "GAME OVER STATE" with Restart Button
- * - If not mine AND has surrounding: display the number of surronding mines (immediately, any direction)
- * - If not mine AND no surrounding: trigger same function for each neighboring square (recursion FTW)
- *
- * - Show all mines when you click a mine square
- * - Display time taken to solve in seconds
- *
- * Cover any recursion issues:
- * - Don't allow negative board squares for edges of board
- */
 
 /**
  * Cleanup List:
  * - Write Unit Tests & 100% Coverage with Jest
  * - Migrate to PostCSS
  * - Move settings into its own component
- * - Utilize Vuex for state management
- * - Fix overflow issues with larger grids
  */
+
+const initialState = () => ({
+    loading: false,
+    submitted: false,
+    boardCreated: false,
+    gameOver: false,
+    gameWon: false,
+    loadingPlayAgain: false,
+    options: {
+        rows: 8,
+        columns: 8,
+        mines: 8,
+    },
+});
 
 export default {
     name: 'App',
@@ -113,27 +119,21 @@ export default {
     components: {
         PageHeader,
         PageFooter,
-        // LoadingOverlay,
         MButton,
         Board,
     },
 
     data() {
-        return {
-            loading: false,
-            submitted: false,
-            boardCreated: false,
-            options: {
-                rows: 8,
-                columns: 8,
-                mines: 8,
-            },
-        };
+        return initialState();
     },
 
     computed: {
         totalBoardSquares() {
             return this.options.columns * this.options.rows;
+        },
+
+        gameOverClass() {
+            return `Result${this.gameWon ? 'Won' : 'Failure'}`;
         },
     },
 
@@ -148,6 +148,16 @@ export default {
         },
     },
 
+    mounted() {
+        EventBus.$on('game:over', value => {
+            this.gameOver = value;
+        });
+
+        EventBus.$on('game:won', value => {
+            this.gameWon = value;
+        });
+    },
+
     methods: {
         handleStartGame() {
             this.loading = true;
@@ -157,6 +167,13 @@ export default {
         handleBoardCreated() {
             this.loading = false;
             this.boardCreated = true;
+        },
+
+        handlePlayAgain() {
+            this.loadingPlayAgain = true;
+            setTimeout(() => {
+                Object.assign(this.$data, initialState());
+            }, 1000);
         },
     },
 };
@@ -215,5 +232,18 @@ input {
         width: 50px;
         text-align: center;
     }
+}
+
+.Result {
+    width: 600px;
+    margin: -25px auto 0 auto;
+    padding: 10px;
+    font-size: 24px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+.PlayAgainButton {
+    margin: 20px 0;
 }
 </style>

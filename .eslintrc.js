@@ -230,7 +230,7 @@ module.exports = {
                 next: '*',
             },
             {
-                blankLine: 'always',
+                blankLine: 'any',
                 prev: ['const', 'let', 'var'],
                 next: '*',
             },
